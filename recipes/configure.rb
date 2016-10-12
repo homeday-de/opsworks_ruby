@@ -6,7 +6,17 @@
 
 prepare_recipe
 
-every_enabled_application do |application|
+# required by the curb gem
+package 'libcurl3'
+
+package 'libcurl3-gnutls'
+
+package 'libcurl4-openssl-dev'
+
+# install mysql-client so you can use cmdline mysql
+package 'mysql-client-core-5.5'
+
+every_enabled_application do |application, _deploy|
   create_deploy_dir(application, File.join('shared'))
   create_deploy_dir(application, File.join('shared', 'config'))
   create_deploy_dir(application, File.join('shared', 'log'))
