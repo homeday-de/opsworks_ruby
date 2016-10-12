@@ -19,6 +19,11 @@ package 'libcurl4-openssl-dev' do
   action :install
 end
 
+# install mysql-client so you can use cmdline mysql
+package 'mysql-client-core-5.5' do
+  action :install
+end
+
 every_enabled_application do |application, _deploy|
   create_deploy_dir(application, File.join('shared'))
   create_deploy_dir(application, File.join('shared', 'config'))
