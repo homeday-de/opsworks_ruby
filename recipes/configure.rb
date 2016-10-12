@@ -6,6 +6,19 @@
 
 prepare_recipe
 
+# required by the curb gem
+package 'libcurl3' do
+  action :install
+end
+
+package 'libcurl3-gnutls' do
+  action :install
+end
+
+package 'libcurl4-openssl-dev' do
+  action :install
+end
+
 every_enabled_application do |application, _deploy|
   create_deploy_dir(application, File.join('shared'))
   create_deploy_dir(application, File.join('shared', 'config'))
