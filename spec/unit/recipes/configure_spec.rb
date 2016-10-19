@@ -891,4 +891,60 @@ describe 'opsworks_ruby::configure' do
       chef_run
     end.not_to raise_error
   end
+
+  context 'No RDS (Database defined in node) with multiple databases' do
+    let(:supplied_node) do
+      node(deploy: {
+             dummy_project: {
+               database: {
+                  adapter: 'postgresql',
+                  username: 'user_936',
+                  password: 'password_936',
+                  host: 'dummy-project.936.us-west-2.rds.amazon.com',
+                  database: 'database_936',
+                  external_database: {
+                    adapter: 'postgresql',
+                    username: 'user_937',
+                    password: 'password_937',
+                    host: 'dummy-project.937.us-west-2.rds.amazon.com',
+                    database: 'database_937',
+                  }
+               },
+               global: { environment: 'staging' },
+               framework: { adapter: 'rails' }
+             }
+           })
+    end
+    let(:chef_run) do
+      ChefSpec::SoloRunner.new(platform: 'ubuntu', version: '14.04') do |solo_node|
+        solo_node.set['deploy'] = supplied_node['deploy']
+      end.converge(described_recipe)
+    end
+
+    before do
+      stub_search(:aws_opsworks_app, '*:*').and_return([aws_opsworks_app(data_sources: [])])
+      stub_search(:aws_opsworks_rds_db_instance, '*:*').and_return([])
+    end
+
+    it 'creates proper database.yml template' do
+      db_config = Drivers::Db::Postgresql.new(chef_run, aws_opsworks_app(data_sources: [])).out
+      expect(db_config[:adapter]).to eq 'postgresql'
+      expect(db_config[:username]).to eq 'user_936'
+      expect(db_config[:password]).to eq 'password_936'
+      expect(db_config[:host]).to eq 'dummy-project.936.us-west-2.rds.amazon.com'
+      expect(db_config[:database]).to eq 'database_936'
+
+      external_db_config = db_config.delete(:external_database)
+
+      expect(chef_run)
+        .to render_file("/srv/www/#{aws_opsworks_app['shortname']}/shared/config/database.yml").with_content(
+          JSON.parse({ 
+            development: db_config, 
+            production: db_config, 
+            staging: db_config,
+            external_database: external_db_config
+          }.to_json).to_yaml
+        )
+    end
+  end
 end
