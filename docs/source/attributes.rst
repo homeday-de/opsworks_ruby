@@ -116,7 +116,9 @@ database
 
 -  ``app['database'][<any other>]``
 
-  -  Any other key-value pair provided here, will be passed directly to
+  -  If you supply a hash, it will be put to the top level as a database connection configuration. This is a temporary way to specify multiple DB connections.
+
+  - Any other key-value pair provided here, will be passed directly to
      the ``database.yml``
 
 scm
