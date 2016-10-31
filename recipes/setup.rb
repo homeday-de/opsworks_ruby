@@ -15,6 +15,8 @@ package 'libcurl4-openssl-dev'
 package 'libmysqlclient-dev'
 # install mysql-client so you can use cmdline mysql
 package 'mysql-client-core-5.5'
+# imagemagick
+package 'imagemagick'
 
 # Ruby and bundler
 include_recipe 'deployer'
