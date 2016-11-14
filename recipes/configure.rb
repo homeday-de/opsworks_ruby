@@ -25,6 +25,7 @@ every_enabled_application do |application, _deploy|
   appserver = Drivers::Appserver::Factory.build(self, application, databases: databases)
   worker = Drivers::Worker::Factory.build(self, application, databases: databases)
   webserver = Drivers::Webserver::Factory.build(self, application)
+  consul_template = Drivers::ConsulTemplate::Worker.new(self, application)
 
-  fire_hook(:configure, items: databases + [scm, framework, appserver, worker, webserver])
+  fire_hook(:configure, items: databases + [scm, framework, appserver, worker, webserver, consul_template])
 end

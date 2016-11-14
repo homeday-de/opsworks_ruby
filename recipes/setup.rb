@@ -17,6 +17,8 @@ package 'libmysqlclient-dev'
 package 'mysql-client-core-5.5'
 # imagemagick
 package 'imagemagick'
+# consul
+include_recipe 'opsworks_ruby::consul'
 
 # Ruby and bundler
 include_recipe 'deployer'
