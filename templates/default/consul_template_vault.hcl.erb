@@ -51,7 +51,7 @@ log_level = "warn"
 // This is the path to store a PID file which will contain the process ID of the
 // Consul Template process. This is useful if you plan to send custom signals
 // to the process.
-pid_file = "/var/run/consul-template.pid"
+//pid_file = "/var/run/consul-template.pid"
 
 // This is the quiescence timers; it defines the minimum and maximum amount of
 // time to wait for the cluster to reach a consistent state before rendering a
@@ -64,7 +64,7 @@ wait = "5s:10s"
 vault {
   // This is the address of the Vault leader. The protocol (http(s)) portion
   // of the address is required.
-  address = "<%= node["deploy"]["vault"]["vault_url"] %>"
+  address = "<%= @vault_url %>"
 
   // This is the token to use when communicating with the Vault server.
   // Like other tools that integrate with Vault, Consul Template makes the
@@ -72,7 +72,7 @@ vault {
   // incorporated logic to generate tokens via Vault's auth methods.
   //
   // This value can also be specified via the environment variable VAULT_TOKEN.
-  token = "<%= node["deploy"]["vault"]["vault_token"] %>"
+  token = "<%= @vault_token %>"
 
   // This tells Consul Template that the provided token is actually a wrapped
   // token that should be unwrapped using Vault's cubbyhole response wrapping
