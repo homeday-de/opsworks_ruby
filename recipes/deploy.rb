@@ -66,7 +66,8 @@ every_enabled_application do |application|
     migrate framework.out[:migrate]
     before_migrate do
       perform_bundle_install(shared_path, bundle_env)
-
+      
+      consul_template.release_path = release_path
       fire_hook(
         :deploy_before_migrate, context: self, items: databases + [scm, framework, appserver, worker, webserver, consul_template]
       )
