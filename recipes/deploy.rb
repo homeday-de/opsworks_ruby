@@ -54,7 +54,8 @@ every_enabled_application do |application, deploy|
     migrate framework.out[:migrate]
     before_migrate do
       perform_bundle_install(shared_path, bundle_env)
-
+      
+      consul_template.release_path = release_path
       fire_hook(:deploy_before_migrate, items: databases + [scm, framework, appserver, worker, webserver, consul_template])
 
       run_callback_from_file(File.join(release_path, 'deploy', 'before_migrate.rb'))

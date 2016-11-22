@@ -5,6 +5,7 @@ module Drivers
       include Drivers::Dsl::Output
       include Chef::Mixin::ShellOut
 
+      attr_accessor :release_path
       # def out
       #   handle_output(raw_out)
       # end
@@ -17,15 +18,22 @@ module Drivers
         return unless vault_enabled?
         template_str = "#{consul_template_secret_template_path}:#{consul_template_secret_destination_path}"
         consul_template_cmd = <<-TPL
-consul-template -config=#{consul_template_config_path} -template "#{template_str}" -once
+/usr/local/bin/consul-template -config=#{consul_template_config_path} -template "#{template_str}" -retry 30s -once 2>&1
 TPL
-        app_deploy_dir = deploy_dir(app)
+        app_release_path = release_path
+
         context.execute 'vault:populate_secrets_yml' do
-          command consul_template_cmd
+          # puts "==" * 80
+          puts "EXECUTING VAULT:populate_secrets_yml"
+          puts consul_template_cmd
+          consul_output =`#{consul_template_cmd}`
+          puts consul_output
+          command "ls"
           user node['deployer']['user']
-          cwd File.join(app_deploy_dir, 'current')
+          cwd app_release_path
           group www_group
           environment env
+          live_stream true
         end        
       end
 
@@ -51,21 +59,13 @@ TPL
         @vault_url = vault_attrs.fetch("vault_url")
         app_id = vault_attrs.fetch('app_id')
         user_id = vault_attrs.fetch('user_id')
-        puts '=' * 80
-    curl_cmd = 
+        curl_cmd = 
 <<-EOH
 curl -s -XPOST #{vault_url}/v1/auth/app-id/login -d '{"app_id":"#{app_id}", "user_id":"#{user_id}"}' | ruby -e 'require "json"; puts JSON.parse(ARGF.read)["auth"]["client_token"]'
 EOH
-        puts "VAULT URL: #{vault_url}"
-        puts "APP ID: #{app_id}"
-        puts "USER ID: #{user_id}"
-        puts "CURL CMD: #{curl_cmd}"
         curl_output = shell_out(curl_cmd)
-        puts "shell curl: #{curl_output.inspect}"
-        puts "node deploy: #{node['deploy'].inspect}"
         @vault_token = curl_output.stdout.strip.gsub(/\A"|"\Z/, '')        
         context.node.default['deploy'][app_shortname]['vault']['vault_token'] = @vault_token
-        puts "token: #{@vault_token}"
       end
 
       def create_consul_template_config
@@ -86,11 +86,11 @@ EOH
       end
 
       def consul_template_secret_template_path
-        File.join(deploy_dir(app), File.join('current', 'config', 'secrets.yml.ctmpl'))
+        File.join(release_path, File.join('config', 'secrets.yml.ctmpl'))
       end
 
       def consul_template_secret_destination_path
-        File.join(deploy_dir(app), File.join('current', 'config', 'secrets.yml'))
+        File.join(release_path, File.join('config', 'secrets.yml'))
       end
 
       def app_shortname
