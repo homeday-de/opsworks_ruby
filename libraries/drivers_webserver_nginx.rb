@@ -7,8 +7,9 @@ module Drivers
       output filter: [
         :build_type, :client_body_timeout, :client_header_timeout, :client_max_body_size, :dhparams, :keepalive_timeout,
         :log_dir, :proxy_read_timeout, :proxy_send_timeout, :send_timeout, :ssl_for_legacy_browsers,
-        :extra_config, :extra_config_ssl
+        :extra_config, :extra_config_ssl, :proxy_buffer_size, :proxy_buffers, :proxy_busy_buffers_size
       ]
+      
       notifies :deploy, action: :restart, resource: 'service[nginx]', timer: :delayed
       notifies :undeploy, action: :restart, resource: 'service[nginx]', timer: :delayed
 

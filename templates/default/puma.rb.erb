@@ -64,6 +64,19 @@ bind "unix://<%= @deploy_dir %>/shared/sockets/puma.sock"
 # The default is "0".
 workers <%= @out[:worker_processes] %>
 
+# when preloading the app, make sure to disconnect ActiveRecord before forking
+<% if @out[:preload_app] %>
+before_fork do
+  ActiveRecord::Base.connection_pool.disconnect!
+end
+# when preloading the app, establish ActiveRecord connection on worker boot
+on_worker_boot do
+  ActiveSupport.on_load(:active_record) do
+    ActiveRecord::Base.establish_connection
+  end
+end
+<% end %>
+
 # Change the default timeout of worker startup
 # The default is 60
 worker_timeout <%= @out[:timeout] %>
