@@ -18,15 +18,14 @@ module Drivers
         return unless vault_enabled?
         template_str = "#{consul_template_secret_template_path}:#{consul_template_secret_destination_path}"
         consul_template_cmd = <<-TPL
-/usr/local/bin/consul-template -config=#{consul_template_config_path} -template "#{template_str}" -retry 30s -once 2>&1
+consul-template -config=#{consul_template_config_path} -template "#{template_str}" -retry 30s -once 2>&1
 TPL
         app_release_path = release_path
-
+        rails_env = rails_environment
         context.execute 'vault:populate_secrets_yml' do
-          # puts "==" * 80
           puts "EXECUTING VAULT:populate_secrets_yml"
           puts consul_template_cmd
-          consul_output =`#{consul_template_cmd}`
+          consul_output =`RAILS_ENV=#{rails_env} #{consul_template_cmd}`
           puts consul_output
           command "ls"
           user node['deployer']['user']
@@ -46,8 +45,12 @@ TPL
       def validate_app_engine
       end
 
+      def rails_environment
+        context.node['deploy'][app_shortname].fetch('global', {}).fetch('environment')
+      end
+
       def vault_enabled?
-        context.node['deploy'][app_shortname].try(:[], 'vault')
+        context.node['deploy'][app_shortname].fetch('vault', nil)
       end
 
       protected
