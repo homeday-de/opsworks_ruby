@@ -6,23 +6,12 @@ module Drivers
       allowed_engines :null
       output filter: []
 
-      def after_deploy
+      def configure
       end
-
-      alias after_undeploy after_deploy
-
-      protected
-
-      # rubocop:disable Metrics/AbcSize
-      def add_appserver_config
-      end
-      # rubocop:enable Metrics/AbcSize
-
-      def add_appserver_service_script
-      end
-
-      def add_appserver_service_context
-      end
+      
+      alias deploy_before_restart configure
+      alias after_deploy configure
+      alias after_undeploy configure
     end
   end
 end
