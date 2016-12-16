@@ -14,9 +14,15 @@ package 'libcurl4-openssl-dev'
 # so that mysql2 gem can compile
 package 'libmysqlclient-dev'
 # install mysql-client so you can use cmdline mysql
-package 'mysql-client-core-5.5'
+package 'mysql-client-core-5.6'
 # imagemagick
 package 'imagemagick'
+# htop
+package 'htop'
+# siege artillery
+package 'libc6-dbg'
+package 'gdb'
+
 # consul
 include_recipe 'opsworks_ruby::consul'
 
