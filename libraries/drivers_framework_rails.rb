@@ -32,7 +32,7 @@ module Drivers
         return unless db.applicable_for_configuration?
 
         database = db.out
-        deploy_environment = deploy_env
+        deploy_environment = deploy_env #globals[:environment]
         # hackety hack: use hashes in the db.out as separate database configs. remove those from the db
         extra_databases = database.keys.select {|key| database[key].is_a?(Hash) }.each_with_object({}) do |key, databases|
           databases[key] = database.delete(key)
@@ -43,7 +43,7 @@ module Drivers
           mode '0660'
           owner node['deployer']['user'] || 'root'
           group www_group
-          variables(database: database, environment: deploy_env, extra_databases: extra_databases)
+          variables(database: database, environment: deploy_environment, extra_databases: extra_databases)
         end
       end
 
