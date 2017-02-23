@@ -26,6 +26,9 @@ package 'gdb'
 # consul
 include_recipe 'opsworks_ruby::consul'
 
+#logrotate
+include_recipe 'opsworks_ruby::logrotate'
+
 # Ruby and bundler
 include_recipe 'deployer'
 if node['platform_family'] == 'debian'
@@ -36,6 +39,9 @@ else
   package "ruby#{ruby_pkg_version.join('')}-devel"
   execute "/usr/sbin/alternatives --set ruby /usr/bin/ruby#{ruby_pkg_version.join('.')}"
 end
+
+# update rubygems to the latest version
+execute "/usr/bin/gem update --system"
 
 apt_repository 'apache2' do
   uri 'http://ppa.launchpad.net/ondrej/apache2/ubuntu'
