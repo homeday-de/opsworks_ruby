@@ -98,30 +98,32 @@ default['defaults']['framework']['adapter'] = 'rails'
 ## rails
 
 default['defaults']['framework']['migrate'] = true
-default['defaults']['framework']['migration_command'] =
-  'if /usr/local/bin/bundle exec rake db:version > /dev/null 2>&1; ' \
-  'then ' \
-  'echo "running migrations, 3 attempts" ' \
-  'counter=1 ' \
-  ' while [ $counter -le 3 ] ' \
-  'do ' \
-  '/usr/local/bin/bundle exec rake db:migrate; ' \
-  'if [ $? -eq 0 ] ' \
-  'then ' \
-  'exit 0 ' \
-  'else ' \
-  'random=$(($(dd if=/dev/urandom count=1 2> /dev/null | cksum | cut -d' ' -f1) % 10)) ' \
-  'seconds=$(( $random + 10)); ' \
-  'echo "rake db:migrate failed, retrying in $seconds seconds" ' \
-  'sleep $seconds; ' \
-  'counter=$(( $counter + 1 )); ' \
-  'fi ' \
-  'done ' \
-  'echo "could not run migrations 3 times in a row, exiting" ' \
-  'exit 1 ' \
-  'else ' \
-  'echo "problem running bundler" ' \
-  'fi' 
+default['defaults']['framework']['migration_command'] = <<-CMD
+if /usr/local/bin/bundle exec rake db:version > /dev/null 2>&1;
+  then
+    echo "running migrations, 3 attempts"
+    counter=1
+    while [ $counter -le 3 ]
+    do
+      /usr/local/bin/bundle exec rake db:migrate;
+      if [ $? -eq 0 ]
+      then
+        exit 0
+      else
+        random=$(($(dd if=/dev/urandom count=1 2> /dev/null | cksum | cut -d' ' -f1) % 10))
+        seconds=$(( $random + 10));
+        echo "rake db:migrate failed, retrying in $seconds seconds"
+        sleep $seconds;
+        counter=$(( $counter + 1 ));
+      fi
+    done
+    # could not run rake db:migrate after 3 attempts
+    echo "could not run migrations 3 times in a row, exiting"
+    exit 1
+  else
+    echo "problem running bundler"
+fi  
+CMD
 default['defaults']['framework']['assets_precompile'] = true
 default['defaults']['framework']['assets_precompilation_command'] = '/usr/local/bin/bundle exec rake assets:precompile'
 default['defaults']['framework']['envs_in_console'] = false
