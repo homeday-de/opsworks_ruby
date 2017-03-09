@@ -10,7 +10,7 @@ prepare_recipe
 file '/etc/logrotate.d/rails_app' do
   content '/srv/www/*/shared/log/*log {
   weekly
-  rotate 4
+  rotate 8
   notifempty
   missingok
   compress
