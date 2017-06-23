@@ -11,7 +11,7 @@ package "jq"
 # Download the latest version of Consul Template using the remote_file
 # resource in Chef and trigger an extraction.
 remote_file "/tmp/consul-template.zip" do
-  source "https://releases.hashicorp.com/consul-template/0.16.0/consul-template_0.16.0_linux_amd64.zip"
+  source "https://releases.hashicorp.com/consul-template/0.18.5/consul-template_0.18.5_linux_amd64.zip"
   owner "root"
   group "root"
   mode "0755"
