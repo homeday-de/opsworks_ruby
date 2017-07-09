@@ -1,9 +1,9 @@
 # frozen_string_literal: true
-# rubocop:disable Metrics/BlockLength
+
 require 'spec_helper'
 
 describe 'opsworks_ruby::setup' do
-  describe package('ruby2.3') do
+  describe package('ruby2.4') do
     it { should be_installed }
   end
 
@@ -30,6 +30,21 @@ end
 
 describe 'opsworks_ruby::configure' do
   context 'webserver' do
+    describe file('/etc/logrotate.d/dummy_project-apache2-production') do
+      its(:content) do
+        should include '"/var/log/apache2/dummy-project.example.com.access.log" ' \
+                       '"/var/log/apache2/dummy-project.example.com.error.log" {'
+      end
+      its(:content) { should include '  daily' }
+      its(:content) { should include '  rotate 30' }
+      its(:content) { should include '  missingok' }
+      its(:content) { should include '  compress' }
+      its(:content) { should include '  delaycompress' }
+      its(:content) { should include '  notifempty' }
+      its(:content) { should include '  copytruncate' }
+      its(:content) { should include '  sharedscripts' }
+    end
+
     describe file('/etc/apache2/ssl/dummy-project.example.com.key') do
       its(:content) { should include '-----BEGIN RSA PRIVATE KEY-----' }
     end
@@ -72,6 +87,8 @@ describe 'opsworks_ruby::configure' do
     describe file('/srv/www/dummy_project/shared/scripts/unicorn.service') do
       its(:content) { should include 'ENV[\'ENV_VAR1\'] = "test"' }
       its(:content) { should include 'ENV[\'HANAMI_ENV\'] = "production"' }
+      its(:content) { should include 'ENV[\'HOME\'] = "/home/deploy"' }
+      its(:content) { should include 'ENV[\'USER\'] = "deploy"' }
       its(:content) { should include 'PID_PATH="/srv/www/dummy_project/shared/pids/unicorn.pid"' }
       its(:content) { should include 'def unicorn_running?' }
     end
@@ -92,14 +109,16 @@ describe 'opsworks_ruby::configure' do
       its(:content) { should include 'check process resque_dummy_project-1' }
       its(:content) do
         should include 'HANAMI_ENV="production" DATABASE_URL="sqlite:///srv/www/dummy_project/shared/db/data.sqlite3"' \
-                       ' QUEUE=default,mailers VERBOSE=1 PIDFILE=/srv/www/dummy_project/shared/pids/' \
+                       ' HOME="/home/deploy" USER="deploy" QUEUE=default,mailers VERBOSE=1 ' \
+                       'PIDFILE=/srv/www/dummy_project/shared/pids/' \
                        'resque_dummy_project-1.pid COUNT=3 bundle exec rake environment resque:work'
       end
       its(:content) { should include 'logger -t resque-dummy_project-1' }
       its(:content) { should include 'check process resque_dummy_project-2' }
       its(:content) do
         should include 'HANAMI_ENV="production" DATABASE_URL="sqlite:///srv/www/dummy_project/shared/db/data.sqlite3"' \
-                       ' QUEUE=default,mailers VERBOSE=1 PIDFILE=/srv/www/dummy_project/shared/pids/' \
+                       ' HOME="/home/deploy" USER="deploy" QUEUE=default,mailers VERBOSE=1 ' \
+                       'PIDFILE=/srv/www/dummy_project/shared/pids/' \
                        'resque_dummy_project-2.pid COUNT=3 bundle exec rake environment resque:work'
       end
       its(:content) { should include 'logger -t resque-dummy_project-2' }
@@ -140,4 +159,3 @@ describe 'opsworks_ruby::deploy' do
     end
   end
 end
-# rubocop:enable Metrics/BlockLength

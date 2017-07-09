@@ -1,8 +1,9 @@
 # frozen_string_literal: true
+
 require 'spec_helper'
 
 describe 'opsworks_ruby::setup' do
-  describe package('ruby2.3') do
+  describe package('ruby2.4') do
     it { should be_installed }
   end
 
@@ -33,7 +34,7 @@ describe 'opsworks_ruby::configure' do
       it { should_not exist }
     end
 
-    describe file('/etc/apache2') do
+    describe file('/etc/apache2/apache2.conf') do
       it { should_not exist }
     end
   end

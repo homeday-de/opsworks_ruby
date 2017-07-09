@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 module Drivers
   module Appserver
     class Base < Drivers::Base
@@ -33,8 +34,7 @@ module Drivers
         ).symbolize_keys
       end
 
-      def validate_app_engine
-      end
+      def validate_app_engine; end
 
       protected
 
@@ -129,6 +129,7 @@ module Drivers
       def environment
         framework = Drivers::Framework::Factory.build(context, app, options)
         app['environment'].merge(framework.out[:deploy_environment] || {})
+                          .merge('HOME' => node['deployer']['home'], 'USER' => node['deployer']['user'])
       end
     end
   end

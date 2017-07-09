@@ -1,3 +1,82 @@
+<a name="1.6.0"></a>
+# [1.6.0](https://github.com/ajgon/opsworks_ruby/compare/v1.5.0...v1.6.0) (2017-06-03)
+
+
+### Bug Fixes
+
+* **ubuntu:** proper provisioning for ubuntu 16.04 ([ea5b530](https://github.com/ajgon/opsworks_ruby/commit/ea5b530)), closes [#81](https://github.com/ajgon/opsworks_ruby/issues/81)
+
+
+### Features
+
+* **webserver:** Specify upgrade method for nginx ([2624d04](https://github.com/ajgon/opsworks_ruby/commit/2624d04))
+* **logrotate:** rotate all logs in app/log ([4737b49](https://github.com/ajgon/opsworks_ruby/commit/4737b49))
+
+
+### BREAKING CHANGES
+
+* Support for all legacy distributions has been dropped
+off. Currently, only Ubuntu 16.04 and Amazon Linux 2017.03 are
+supported.
+
+This cookbook _should_ work on earlier versions (especially on Ubuntu),
+PR with fixes to them _will_ be accepted, however the core team won't
+include any patches for those distros by they own.
+
+
+
+<a name="1.5.0"></a>
+# [1.5.0](https://github.com/ajgon/opsworks_ruby/compare/v1.4.0...v1.5.0) (2017-04-25)
+
+
+### Features
+
+* **framework:** Allow increased timeout during deploy ([#76](https://github.com/ajgon/opsworks_ruby/issues/76)) ([e216972](https://github.com/ajgon/opsworks_ruby/commit/e216972))
+* **logrotate:** implement logrotate ([86ebc10](https://github.com/ajgon/opsworks_ruby/commit/86ebc10)), closes [#78](https://github.com/ajgon/opsworks_ruby/issues/78)
+
+
+
+<a name="1.4.0"></a>
+# [1.4.0](https://github.com/ajgon/opsworks_ruby/compare/v1.3.0...v1.4.0) (2017-03-12)
+
+
+### Bug Fixes
+
+* Bump faraday middleware version ([d508928](https://github.com/ajgon/opsworks_ruby/commit/d508928))
+* Switched `nginx` cookbook to more actively developed `chef_nginx` ([0f4f64c](https://github.com/ajgon/opsworks_ruby/commit/0f4f64c)), closes [#65](https://github.com/ajgon/opsworks_ruby/issues/65)
+
+
+### Features
+
+* **webserver:** Add app specific error log and location for nginx ([a098279](https://github.com/ajgon/opsworks_ruby/commit/a098279))
+* **worker:** Safely quiet and shutdown sidekiq ([c36652f](https://github.com/ajgon/opsworks_ruby/commit/c36652f))
+
+
+### BREAKING CHANGES
+
+* `nginx` cookbook is not a `opsworks_ruby` dependency
+anymore. Now it's `chef_nginx` which is more actively developed.
+Please update your recipe repositories.
+
+
+
+<a name="1.3.0"></a>
+# [1.3.0](https://github.com/ajgon/opsworks_ruby/compare/v1.2.1...v1.3.0) (2017-01-16)
+
+
+### Features
+
+* **appserver:** Allowed deploy_before_restart on null appserver ([b0375a6](https://github.com/ajgon/opsworks_ruby/commit/b0375a6))
+* **database:** Added aurora as allowed engine for mysql2 adapter ([a2789f0](https://github.com/ajgon/opsworks_ruby/commit/a2789f0))
+* **ruby:** Added support for ruby 2.4 ([a89451f](https://github.com/ajgon/opsworks_ruby/commit/a89451f))
+
+
+### BREAKING CHANGES
+
+* ruby: Ruby 2.4 is now a default Ruby interpreter
+
+
+
 <a name="1.2.1"></a>
 ## [1.2.1](https://github.com/ajgon/opsworks_ruby/compare/v1.2.0...v1.2.1) (2016-11-27)
 

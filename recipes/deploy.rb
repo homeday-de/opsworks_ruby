@@ -4,7 +4,6 @@ prepare_recipe
 
 include_recipe 'opsworks_ruby::configure'
 
-# rubocop:disable Metrics/BlockLength
 every_enabled_application do |application|
   databases = []
   every_enabled_rds(self, application) do |rds|
@@ -100,8 +99,9 @@ every_enabled_application do |application|
 
       run_callback_from_file(File.join(release_path, 'deploy', 'after_restart.rb'))
     end
+
+    timeout node['deploy']['timeout']
   end
 
   fire_hook(:after_deploy, items: databases + [scm, framework, appserver, worker, webserver])
 end
-# rubocop:enable Metrics/BlockLength

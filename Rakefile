@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'bundler/setup'
 
 desc 'Run Test Kitchen integration tests'
@@ -12,7 +13,7 @@ namespace :integration do
 
   desc 'Run integration tests with kitchen-docker'
   task :docker, [:instance] do |_t, args|
-    args.with_defaults(instance: 'default-ubuntu-1404')
+    args.with_defaults(instance: 'default-ubuntu-1604')
     require 'kitchen'
     Kitchen.logger = Kitchen.default_file_logger
     loader = Kitchen::Loader::YAML.new(local_config: '.kitchen.docker.yml')
@@ -22,4 +23,4 @@ namespace :integration do
   end
 end
 
-task default: %w(integration:vagrant)
+task default: %w[integration:vagrant]

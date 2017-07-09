@@ -34,6 +34,14 @@ convention).
      of an application, not included in this list - it will be skipped, as this list
      takes precedence over anything else.
 
+-  ``node['ruby-ng']['ruby_version']``
+
+  -  **Type:** string
+  -  **Default:** ``2.4``
+  -  Sets the Ruby version used through the system. See `ruby-ng cookbook documentation`_
+     for more details
+
+
 Application attributes
 ----------------------
 
@@ -80,6 +88,12 @@ Global parameters apply to the whole application, and can be used by any section
   -  **Type:** boolean
   -  **Default:** ``true``
   -  When set to true, any failed deploy will be removed from ``releases`` directory.
+
+- ``app['global']['logrotate_rotate']``
+
+  -  **Type:** integer
+  -  **Default:** ``30``
+  -  **Important Notice:** The parameter is in days
 
 database
 ~~~~~~~~
@@ -407,7 +421,7 @@ nginx
 
   -  **Supported values:** ``default`` or ``source``
   -  **Default:** ``default``
-  -  The way the `nginx`_ cookbooks handles ``nginx`` installation.
+  -  The way the `chef_nginx`_ cookbook handles ``nginx`` installation.
      Check out `the corresponding docs`_ for more details. Never use
      ``node['nginx']['install_method']``, as it will be always overwritten
      by this attribute.
@@ -452,7 +466,13 @@ nginx
 
   -  **Default**: ``10``
 
-| Since this driver is basically a wrapper for `nginx cookbook`_,
+-  |app['webserver']['enable_upgrade_method']|_
+
+  -  **Supported values:** ``true``, ``false``
+  -  **Default**: ``false``
+  -  When set to true, enable Websocket's upgrade method such as Rails actionCable.
+
+| Since this driver is basically a wrapper for `chef_nginx cookbook`_,
 | you can also configure `node['nginx'] attributes`_
 | as well (notice that ``node['deploy'][<application_shortname>]`` logic
 | doesn't apply here.)
@@ -489,6 +509,7 @@ resque
   -  **Default:** ``*``
   -  Array of queues which should be processed by resque
 
+.. _ruby-ng cookbook documentation: https://supermarket.chef.io/cookbooks/ruby-ng
 .. _figaro: https://github.com/laserlemon/figaro
 .. _dotenv: https://github.com/bkeepers/dotenv
 .. |app['appserver']['backlog']| replace:: ``app['appserver']['backlog']``
@@ -515,7 +536,7 @@ resque
 .. _app['webserver']['log_level']: https://httpd.apache.org/docs/2.4/mod/core.html#loglevel
 .. |app['webserver']['proxy_timeout']| replace:: ``app['webserver']['proxy_timeout']``
 .. _app['webserver']['proxy_timeout']: https://httpd.apache.org/docs/current/mod/mod_proxy.html#proxytimeout
-.. _nginx: https://supermarket.chef.io/cookbooks/nginx
+.. _chef_nginx: https://supermarket.chef.io/cookbooks/chef_nginx
 .. _the corresponding docs: https://github.com/miketheman/nginx/tree/2.7.x#recipes
 .. |app['webserver']['client_body_timeout']| replace:: ``app['webserver']['client_body_timeout']``
 .. _app['webserver']['client_body_timeout']: http://nginx.org/en/docs/http/ngx_http_core_module.html#client_body_timeout
@@ -529,7 +550,7 @@ resque
 .. _app['webserver']['proxy_send_timeout']: http://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_send_timeout
 .. |app['webserver']['send_timeout']| replace:: ``app['webserver']['send_timeout']``
 .. _app['webserver']['send_timeout']: http://nginx.org/en/docs/http/ngx_http_core_module.html#send_timeout
-.. _nginx cookbook: https://github.com/miketheman/nginx/tree/2.7.x
+.. _chef_nginx cookbook: https://github.com/chef-cookbooks/chef_nginx
 .. |node['nginx'] attributes| replace:: ``node['nginx']`` attributes
 .. _node['nginx'] attributes: https://github.com/miketheman/nginx/tree/2.7.x#attributes
 .. |sidekiq.yml config file| replace:: ``sidekiq.yml`` config file

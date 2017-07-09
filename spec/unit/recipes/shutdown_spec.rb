@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 #
 # Cookbook Name:: opsworks_ruby
 # Spec:: shutdown
@@ -22,6 +23,30 @@ describe 'opsworks_ruby::shutdown' do
     expect do
       chef_run
     end.not_to raise_error
+  end
+
+  context 'safely shutdown sidekiq' do
+    it 'unmonitors sidekiq processes' do
+      expect(chef_run).to run_execute('monit unmonitor sidekiq_dummy_project-1')
+      expect(chef_run).to run_execute('monit unmonitor sidekiq_dummy_project-2')
+    end
+
+    it 'shutsdown sidekiq processes' do
+      expect(chef_run).to(
+        run_execute(
+          '/bin/su - deploy -c \'cd /srv/www/dummy_project/current && ENV_VAR1="test" ' \
+          'ENV_VAR2="some data" RAILS_ENV="staging" HOME="/home/deploy" USER="deploy" ' \
+          'bundle exec sidekiqctl stop /srv/www/dummy_project/shared/pids/sidekiq_dummy_project-1.pid 8\''
+        )
+      )
+      expect(chef_run).to(
+        run_execute(
+          '/bin/su - deploy -c \'cd /srv/www/dummy_project/current && ENV_VAR1="test" ' \
+          'ENV_VAR2="some data" RAILS_ENV="staging" HOME="/home/deploy" USER="deploy" '\
+          'bundle exec sidekiqctl stop /srv/www/dummy_project/shared/pids/sidekiq_dummy_project-2.pid 8\''
+        )
+      )
+    end
   end
 
   it 'empty node[\'deploy\']' do

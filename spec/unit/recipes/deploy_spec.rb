@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 #
 # Cookbook Name:: opsworks_ruby
 # Spec:: deploy
@@ -93,8 +94,8 @@ describe 'opsworks_ruby::deploy' do
           'log' => 'log',
           'test' => 'public/test'
         },
-        'create_dirs_before_symlink' => %w(tmp public config ../../shared/cache ../../shared/assets ../shared/test),
-        'purge_before_symlink' => %w(log tmp/cache tmp/pids public/system public/assets public/test)
+        'create_dirs_before_symlink' => %w[tmp public config ../../shared/cache ../../shared/assets ../shared/test],
+        'purge_before_symlink' => %w[log tmp/cache tmp/pids public/system public/assets public/test]
       )
 
       expect(chef_run).to run_execute('stop unicorn')
@@ -204,7 +205,7 @@ describe 'opsworks_ruby::deploy' do
     chef_run = ChefSpec::SoloRunner.new(platform: 'ubuntu', version: '14.04') do |solo_node|
       solo_node.set['lsb'] = node['lsb']
       solo_node.set['deploy'] = { 'a1' => {}, 'a2' => {}, 'a3' => {} }
-      solo_node.set['applications'] = %w(a1 a2)
+      solo_node.set['applications'] = %w[a1 a2]
     end.converge(described_recipe)
     service = chef_run.service('puma_a1')
 
@@ -220,6 +221,9 @@ describe 'opsworks_ruby::deploy' do
     expect(chef_run).to create_template('/srv/www/a1/shared/scripts/puma.service')
     expect(chef_run).to create_template('/etc/nginx/sites-available/a1.conf')
     expect(chef_run).to create_link('/etc/nginx/sites-enabled/a1.conf')
+    expect(chef_run).to enable_logrotate_app('a1-nginx-production')
+    expect(chef_run).to enable_logrotate_app('a1-rails-production')
+
     expect(service).to do_nothing
     expect(chef_run).to deploy_deploy('a1')
     expect(chef_run).not_to deploy_deploy('a2')

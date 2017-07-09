@@ -1,9 +1,9 @@
 # frozen_string_literal: true
-# rubocop:disable Metrics/BlockLength
+
 require 'spec_helper'
 
 describe 'opsworks_ruby::setup' do
-  describe package('ruby2.3') do
+  describe package('ruby2.4') do
     it { should be_installed }
   end
 
@@ -30,6 +30,21 @@ end
 
 describe 'opsworks_ruby::configure' do
   context 'webserver' do
+    describe file('/etc/logrotate.d/dummy_project-nginx-production') do
+      its(:content) do
+        should include '"/var/log/nginx/dummy-project.example.com.access.log" ' \
+                       '"/var/log/nginx/dummy-project.example.com.error.log" {'
+      end
+      its(:content) { should include '  daily' }
+      its(:content) { should include '  rotate 30' }
+      its(:content) { should include '  missingok' }
+      its(:content) { should include '  compress' }
+      its(:content) { should include '  delaycompress' }
+      its(:content) { should include '  notifempty' }
+      its(:content) { should include '  copytruncate' }
+      its(:content) { should include '  sharedscripts' }
+    end
+
     describe file('/etc/nginx/ssl/dummy-project.example.com.key') do
       its(:content) { should include '-----BEGIN RSA PRIVATE KEY-----' }
     end
@@ -63,12 +78,26 @@ describe 'opsworks_ruby::configure' do
     describe file('/srv/www/dummy_project/shared/scripts/puma.service') do
       its(:content) { should include 'ENV[\'ENV_VAR1\'] = "test"' }
       its(:content) { should include 'ENV[\'RAILS_ENV\'] = "production"' }
+      its(:content) { should include 'ENV[\'HOME\'] = "/home/deploy"' }
+      its(:content) { should include 'ENV[\'USER\'] = "deploy"' }
       its(:content) { should include 'PID_PATH="/srv/www/dummy_project/shared/pids/puma.pid"' }
       its(:content) { should include 'def puma_running?' }
     end
   end
 
   context 'framework' do
+    describe file('/etc/logrotate.d/dummy_project-rails-production') do
+      its(:content) { should include '"/srv/www/dummy_project/shared/log/*.log" {' }
+      its(:content) { should include '  daily' }
+      its(:content) { should include '  rotate 30' }
+      its(:content) { should include '  missingok' }
+      its(:content) { should include '  compress' }
+      its(:content) { should include '  delaycompress' }
+      its(:content) { should include '  notifempty' }
+      its(:content) { should include '  copytruncate' }
+      its(:content) { should include '  sharedscripts' }
+    end
+
     describe file('/srv/www/dummy_project/current/config/database.yml') do
       its(:content) { should include 'adapter: sqlite3' }
     end
@@ -110,4 +139,3 @@ describe 'opsworks_ruby::deploy' do
     end
   end
 end
-# rubocop:enable Metrics/BlockLength

@@ -1,18 +1,24 @@
 # frozen_string_literal: true
+
 module Drivers
   module Webserver
     class Apache2 < Drivers::Webserver::Base
       adapter :apache2
       allowed_engines :apache2
-      packages debian: 'apache2', rhel: %w(httpd24 mod24_ssl)
-      output filter: [
-        :dhparams, :keepalive_timeout, :limit_request_body, :log_dir, :log_level, :proxy_timeout,
-        :ssl_for_legacy_browsers, :extra_config, :extra_config_ssl
+      packages debian: 'apache2', rhel: %w[httpd24 mod24_ssl]
+      output filter: %i[
+        dhparams keepalive_timeout limit_request_body log_dir log_level proxy_timeout
+        ssl_for_legacy_browsers extra_config extra_config_ssl
       ]
       notifies :deploy,
                action: :restart, resource: { debian: 'service[apache2]', rhel: 'service[httpd]' }, timer: :delayed
       notifies :undeploy,
                action: :restart, resource: { debian: 'service[apache2]', rhel: 'service[httpd]' }, timer: :delayed
+      log_paths lambda { |context|
+        %w[access.log error.log].map do |log_type|
+          File.join(context.raw_out[:log_dir], "#{context.app[:domains].first}.#{log_type}")
+        end
+      }
 
       def raw_out
         output = node['defaults']['webserver'].merge(
@@ -25,7 +31,7 @@ module Drivers
 
       def setup
         handle_packages
-        enable_modules(%w(expires headers lbmethod_byrequests proxy proxy_balancer proxy_http rewrite ssl))
+        enable_modules(%w[expires headers lbmethod_byrequests proxy proxy_balancer proxy_http rewrite ssl])
         add_sites_available_enabled
         define_service(:start)
       end
@@ -40,6 +46,7 @@ module Drivers
         remove_defaults
         add_appserver_config
         enable_appserver_config
+        super
       end
 
       def before_deploy

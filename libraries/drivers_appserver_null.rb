@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 module Drivers
   module Appserver
     class Null < Drivers::Appserver::Base
@@ -6,10 +7,7 @@ module Drivers
       allowed_engines :null
       output filter: []
 
-      def configure
-      end
-
-      alias deploy_before_restart configure
+      def configure; end
       alias after_deploy configure
       alias after_undeploy configure
     end

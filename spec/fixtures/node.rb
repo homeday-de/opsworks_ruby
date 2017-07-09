@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 # rubocop:disable Metrics/MethodLength
 def node(override = {})
   item = {
@@ -14,7 +15,7 @@ def node(override = {})
         global: {
           environment: 'staging',
           create_dirs_before_symlink: %(../shared/test),
-          purge_before_symlink: %w(public/test),
+          purge_before_symlink: %w[public/test],
           symlinks: { 'test' => 'public/test' }
         },
         # database: {
@@ -49,7 +50,8 @@ def node(override = {})
           client_max_body_size: '125m',
           limit_request_body: '131072000',
           dhparams: '--- DH PARAMS ---',
-          extra_config: 'extra_config {}'
+          extra_config: 'extra_config {}',
+          log_level: 'debug'
         },
         framework: {
           adapter: 'rails',
@@ -72,8 +74,8 @@ def node(override = {})
           pids: 'tmp/pids',
           log: 'log'
         },
-        create_dirs_before_symlink: %w(tmp public config ../../shared/cache ../../shared/assets),
-        purge_before_symlink: %w(log tmp/cache tmp/pids public/system public/assets)
+        create_dirs_before_symlink: %w[tmp public config ../../shared/cache ../../shared/assets],
+        purge_before_symlink: %w[log tmp/cache tmp/pids public/system public/assets]
       },
       scm: {
         remove_scm_files: true

@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'spec_helper'
 
 describe Drivers::Webserver::Apache2 do
@@ -17,7 +18,8 @@ describe Drivers::Webserver::Apache2 do
       limit_request_body: '131072000',
       extra_config: 'extra_config {}',
       extra_config_ssl: 'extra_config_ssl {}',
-      log_dir: '/var/log/httpd'
+      log_dir: '/var/log/httpd',
+      log_level: 'debug'
     )
   end
 
@@ -32,7 +34,8 @@ describe Drivers::Webserver::Apache2 do
       limit_request_body: '131072000',
       extra_config: 'extra_config {}',
       extra_config_ssl: 'extra_config {}',
-      log_dir: '/var/log/httpd'
+      log_dir: '/var/log/httpd',
+      log_level: 'debug'
     )
   end
 end

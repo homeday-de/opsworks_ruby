@@ -1,9 +1,9 @@
 # frozen_string_literal: true
-# rubocop:disable Metrics/BlockLength
+
 require 'spec_helper'
 
 describe 'opsworks_ruby::setup' do
-  describe package('ruby2.3') do
+  describe package('ruby2.4') do
     it { should be_installed }
   end
 
@@ -92,6 +92,8 @@ describe 'opsworks_ruby::configure' do
     describe file('/srv/www/dummy_project/shared/scripts/puma.service') do
       its(:content) { should include 'ENV[\'ENV_VAR1\'] = "test"' }
       its(:content) { should include 'ENV[\'RAILS_ENV\'] = "staging"' }
+      its(:content) { should include 'ENV[\'HOME\'] = "/home/deploy"' }
+      its(:content) { should include 'ENV[\'USER\'] = "deploy"' }
       its(:content) { should include 'PID_PATH="/srv/www/dummy_project/shared/pids/puma.pid"' }
       its(:content) { should include 'def puma_running?' }
     end
@@ -125,12 +127,14 @@ describe 'opsworks_ruby::configure' do
       its(:content) { should include 'group sidekiq_dummy_project_group' }
       its(:content) { should include 'check process sidekiq_dummy_project-1' }
       its(:content) do
-        should include 'RAILS_ENV="staging" bundle exec sidekiq -C /srv/www/dummy_project/shared/config/sidekiq_1.yml'
+        should include 'RAILS_ENV="staging" HOME="/home/deploy" USER="deploy" ' \
+                       'bundle exec sidekiq -C /srv/www/dummy_project/shared/config/sidekiq_1.yml'
       end
       its(:content) { should include 'logger -t sidekiq-dummy_project-1' }
       its(:content) { should include 'check process sidekiq_dummy_project-2' }
       its(:content) do
-        should include 'RAILS_ENV="staging" bundle exec sidekiq -C /srv/www/dummy_project/shared/config/sidekiq_2.yml'
+        should include 'RAILS_ENV="staging" HOME="/home/deploy" USER="deploy" ' \
+                       'bundle exec sidekiq -C /srv/www/dummy_project/shared/config/sidekiq_2.yml'
       end
       its(:content) { should include 'logger -t sidekiq-dummy_project-2' }
     end
@@ -182,13 +186,13 @@ describe 'opsworks_ruby::deploy' do
 
   context 'framework' do
     describe command('ls -1 /srv/www/dummy_project/current/public/assets/application-*.css*') do
-      its(:stdout) { should match(/application-[0-9a-f]{64}.css/) }
-      its(:stdout) { should match(/application-[0-9a-f]{64}.css.gz/) }
+      its(:stdout) { should_not match(/application-[0-9a-f]{64}.css/) }
+      its(:stdout) { should_not match(/application-[0-9a-f]{64}.css.gz/) }
     end
 
     describe command('ls -1 /srv/www/dummy_project/current/public/test/application-*.css*') do
-      its(:stdout) { should match(/application-[0-9a-f]{64}.css/) }
-      its(:stdout) { should match(/application-[0-9a-f]{64}.css.gz/) }
+      its(:stdout) { should_not match(/application-[0-9a-f]{64}.css/) }
+      its(:stdout) { should_not match(/application-[0-9a-f]{64}.css.gz/) }
     end
 
     describe file('/srv/www/dummy_project/current/config/application.rb') do
@@ -199,4 +203,3 @@ describe 'opsworks_ruby::deploy' do
     end
   end
 end
-# rubocop:enable Metrics/BlockLength
