@@ -38,9 +38,9 @@ if node['platform_family'] == 'debian'
     content "set httpd port 2812 and\n    use address localhost\n    allow localhost"
   end
 
-  apt_package 'javascript-common' do
-    action :purge
-  end
+  # apt_package 'javascript-common' do
+  #   action :purge
+  # end
 end
 
 # Ruby and bundler
