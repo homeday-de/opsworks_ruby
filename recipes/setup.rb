@@ -37,18 +37,16 @@ if node['platform_family'] == 'debian'
   file '/etc/monit/conf.d/00_httpd.monitrc' do
     content "set httpd port 2812 and\n    use address localhost\n    allow localhost"
   end
-
-  # apt_package 'javascript-common' do
-  #   action :purge
-  # end
 end
 
 # Ruby and bundler
 include_recipe 'deployer'
+
+ruby_pkg_version = node['ruby-ng']['ruby_version'].split('.')[0..1]
+
 if node['platform_family'] == 'debian'
   include_recipe 'ruby-ng::dev'
 else
-  ruby_pkg_version = node['ruby-ng']['ruby_version'].split('.')[0..1]
   package "ruby#{ruby_pkg_version.join('')}"
   package "ruby#{ruby_pkg_version.join('')}-devel"
   execute "/usr/sbin/alternatives --set ruby /usr/bin/ruby#{ruby_pkg_version.join('.')}"
@@ -56,6 +54,11 @@ end
 
 # update rubygems to the latest version
 execute "/usr/bin/gem update --system"
+# link to the correct bundler
+#execute "update-alternatives --force --install /usr/local/bin/bundle bundle /usr/bin/bundle#{ruby_pkg_version.join('.')} 1"
+# since the above had no effect, manually install bundler in the correct location
+ruby_pkg_version.push("0")
+execute "gem install bundler --version=1.16.1 --install-dir=/usr/lib/ruby/gems/#{ruby_pkg_version.join('.')}"
 
 apt_repository 'apache2' do
   uri 'http://ppa.launchpad.net/ondrej/apache2/ubuntu'
