@@ -25,15 +25,13 @@ TPL
         context.execute 'vault:populate_secrets_yml' do
           puts "EXECUTING VAULT:populate_secrets_yml"
           puts consul_template_cmd
-          consul_output =`RAILS_ENV=#{rails_env} #{consul_template_cmd}`
-          puts consul_output
-          command "ls"
+          command "RAILS_ENV=#{rails_env} #{consul_template_cmd}"
           user node['deployer']['user']
           cwd app_release_path
           group www_group
           environment env
           live_stream true
-        end        
+        end
       end
 
       def configure
@@ -62,12 +60,12 @@ TPL
         @vault_url = vault_attrs.fetch("vault_url")
         app_id = vault_attrs.fetch('app_id')
         user_id = vault_attrs.fetch('user_id')
-        curl_cmd = 
+        curl_cmd =
 <<-EOH
 curl -s -XPOST #{vault_url}/v1/auth/app-id/login -d '{"app_id":"#{app_id}", "user_id":"#{user_id}"}' | ruby -e 'require "json"; puts JSON.parse(ARGF.read)["auth"]["client_token"]'
 EOH
         curl_output = shell_out(curl_cmd)
-        @vault_token = curl_output.stdout.strip.gsub(/\A"|"\Z/, '')        
+        @vault_token = curl_output.stdout.strip.gsub(/\A"|"\Z/, '')
         context.node.default['deploy'][app_shortname]['vault']['vault_token'] = @vault_token
       end
 
