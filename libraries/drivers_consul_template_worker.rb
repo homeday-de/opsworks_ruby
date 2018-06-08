@@ -57,7 +57,10 @@ curl --header "X-Vault-Token: #{vault_token}" #{vault_api_url}/v1/auth/token/loo
 EOH
         curl_output = shell_out(curl_cmd)
         expiration_time_utc = Time.iso8601(curl_output.stdout.strip)
-        Time.now.utc > expiration_time_utc + 20 * 60 # if the token expires within the next 20 minutes, consider it expired
+        time_now_utc = Time.now.utc
+        token_expired = time_now_utc > expiration_time_utc + 20 * 60 # if the token expires within the next 20 minutes, consider it expired
+        puts "vault expiration token time #{expiration_time_utc}, time now #{time_now_utc}, token expired : #{token_expired}"
+        token_expired
       end
 
       def validate_app_engine
