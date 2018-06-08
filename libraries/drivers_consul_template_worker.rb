@@ -49,16 +49,16 @@ TPL
       end
 
       def vault_token_expired?
-        vault_token = read_vault_token_from_file
+        vault_token_ff = read_vault_token_from_file
         vault_api_url = vault_attrs.fetch("vault_url")
         curl_cmd =
 <<-EOH
-curl --header "X-Vault-Token: #{vault_token}" #{vault_api_url}/v1/auth/token/lookup-self | ruby -e 'require "json"; puts JSON.parse(ARGF.read)["data"]["expire_time"]'
+curl --header "X-Vault-Token: #{vault_token_ff}" #{vault_api_url}/v1/auth/token/lookup-self | ruby -e 'require "json"; puts JSON.parse(ARGF.read)["data"]["expire_time"]'
 EOH
         curl_output = shell_out(curl_cmd)
         expiration_time_utc = Time.iso8601(curl_output.stdout.strip)
         time_now_utc = Time.now.utc
-        token_expired = time_now_utc > expiration_time_utc + 20 * 60 # if the token expires within the next 20 minutes, consider it expired
+        token_expired = time_now_utc > expiration_time_utc - 20 * 60 # if the token expires within the next 20 minutes, consider it expired
         puts "vault expiration token time #{expiration_time_utc}, time now #{time_now_utc}, token expired : #{token_expired}"
         token_expired
       end
@@ -114,7 +114,7 @@ EOH
           group www_group
           mode '0644'
           variables vars
-          action :create_if_missing
+          action :create
         end
       end
 
