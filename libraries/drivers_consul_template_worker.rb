@@ -99,7 +99,7 @@ EOH
       end
 
       def read_vault_token_from_file
-        File.read(vault_token).chomp
+        IO.read(vault_token_file_path).chomp
       end
 
       def create_consul_template_config
