@@ -91,7 +91,7 @@ EOH
         @vault_token = curl_output.stdout.strip.gsub(/\A"|"\Z/, '')
         context.node.default['deploy'][app_shortname]['vault']['vault_token'] = @vault_token
         # write the vault token to a file too
-        File.write(vault_token_file_path) { |f| f.write(@vault_token) }
+        File.write(vault_token_file_path, @vault_token)
       end
 
       def vault_token_file_path
