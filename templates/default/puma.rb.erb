@@ -67,13 +67,13 @@ workers <%= @out[:worker_processes] %>
 # when preloading the app, make sure to disconnect ActiveRecord before forking
 <% if @out[:preload_app] %>
 before_fork do
-  ActiveRecord::Base.connection_pool.disconnect!
+  ActiveRecord::Base.connection_pool.disconnect! if defined?(ActiveRecord)
   R.client.disconnect if defined?(R)
 end
 # when preloading the app, establish ActiveRecord connection on worker boot
 on_worker_boot do
   ActiveSupport.on_load(:active_record) do
-    ActiveRecord::Base.establish_connection
+    ActiveRecord::Base.establish_connection if defined?(ActiveRecord)
   end
   if defined?(R)
     Redis.current = Redis.new(
