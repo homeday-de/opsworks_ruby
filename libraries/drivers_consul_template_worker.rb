@@ -50,6 +50,8 @@ TPL
 
       def vault_token_expired?
         vault_token_ff = read_vault_token_from_file
+        return true if vault_token_ff.empty?
+        
         vault_api_url = vault_attrs.fetch("vault_url")
         curl_cmd =
 <<-EOH
@@ -103,6 +105,8 @@ EOH
 
       def read_vault_token_from_file
         IO.read(vault_token_file_path).chomp
+      rescue Errno::ENOENT
+        nil
       end
 
       def create_consul_template_config
