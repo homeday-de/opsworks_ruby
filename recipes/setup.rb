@@ -8,21 +8,21 @@
 prepare_recipe
 
 # required by the curb gem
-package 'libcurl3'
-package 'libcurl3-gnutls'
-package 'libcurl4-openssl-dev'
+# package 'libcurl3'
+# package 'libcurl3-gnutls'
+# package 'libcurl4-openssl-dev'
 
 # so that mysql2 gem can compile
-package 'libmysqlclient-dev'
-# install mysql-client so you can use cmdline mysql
-package 'mysql-client'
-# imagemagick
-package 'imagemagick'
-# htop
-package 'htop'
+# package 'libmysqlclient-dev'
+# # install mysql-client so you can use cmdline mysql
+# package 'mysql-client'
+# # imagemagick
+# package 'imagemagick'
+# # htop
+# package 'htop'
 # siege artillery
-package 'libc6-dbg'
-package 'gdb'
+# package 'libc6-dbg'
+# package 'gdb'
 
 # consul
 include_recipe 'opsworks_ruby::consul'
