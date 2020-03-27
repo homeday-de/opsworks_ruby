@@ -57,6 +57,8 @@ execute "/usr/bin/gem update --system"
 # link to the correct bundler
 #execute "update-alternatives --force --install /usr/local/bin/bundle bundle /usr/bin/bundle#{ruby_pkg_version.join('.')} 1"
 # since the above had no effect, manually install bundler in the correct location
+ruby_pkg_version.push("0")
+execute "gem install bundler --version=1.16.1 --install-dir=/usr/lib/ruby/gems/#{ruby_pkg_version.join('.')}"
 
 apt_repository 'apache2' do
   uri 'http://ppa.launchpad.net/ondrej/apache2/ubuntu'
@@ -67,14 +69,8 @@ apt_repository 'apache2' do
   only_if { node['platform'] == 'ubuntu' }
 end
 
-
-ruby_pkg_version.push("0")
-#execute "gem install bundler --version=1.16.1 --install-dir=/usr/lib/ruby/gems/#{ruby_pkg_version.join('.')}"
-
-# temporary version pin
 gem_package 'bundler' do
   action :install
-  options "--version=1.16.1 --install-dir=/usr/lib/ruby/gems/#{ruby_pkg_version.join('.')}"
 end
 
 if node['platform_family'] == 'debian'
