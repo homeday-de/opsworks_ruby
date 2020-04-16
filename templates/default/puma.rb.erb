@@ -68,7 +68,8 @@ workers <%= @out[:worker_processes] %>
 <% if @out[:preload_app] %>
 before_fork do
   ActiveRecord::Base.connection_pool.disconnect! if defined?(ActiveRecord)
-  R.client.disconnect if defined?(R)
+  # this had to be updated for redis > 4
+  R._client.disconnect if defined?(R) && R.respond_to?(:_client)
 end
 # when preloading the app, establish ActiveRecord connection on worker boot
 on_worker_boot do
@@ -77,10 +78,10 @@ on_worker_boot do
   end
   if defined?(R)
     Redis.current = Redis.new(
-      host: Rails.application.secrets.redis_host, 
+      host: Rails.application.secrets.redis_host,
       port: Rails.application.secrets.redis_port
     )
-    R = Redis.current    
+    R = Redis.current
   end
 end
 <% end %>
